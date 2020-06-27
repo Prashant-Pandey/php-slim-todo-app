@@ -1,0 +1,8 @@
+{
+    "propel": {
+        "paths": {
+            "schemaDir": "C:\\Users\\Prashant\\Desktop\\Projects\\PHPProjects\\TodoList",
+            "phpDir": "C:\\Users\\Prashant\\Desktop\\Projects\\PHPProjects\\TodoList"
+        }
+    }
+}

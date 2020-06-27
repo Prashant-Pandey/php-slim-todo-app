@@ -1,0 +1,108 @@
+{% extends 'app.twig' %}
+{% block content %}
+    <style>
+        .todoData {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .todoText {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+    <form id="addTodo">
+        <label for="todoTitle">Title: </label>
+        <input name="todoTitle" id="todoTitle" type="text">
+        <label for="todoContent">Content: </label>
+        <textarea name="todoContent" id="todoContent"></textarea>
+        <input type="submit" value="Add Todos">
+    </form>
+    <div id="todos"></div>
+    <a href="{{ path_for("getTodoList") }}">Your Todo list</a>
+    <a href="{{ path_for("getTodoJson") }}">Your Todo list in JSON </a>
+    <a href="{{ path_for("addTodo") }}">Your Todo list</a>
+    <a href="{{ path_for("logout") }}">Logout</a>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/html" id="todoTemplate">
+        <div data-id="id" class="todoData">
+            <div class="todoText">
+                <div data-content="title"></div>
+                <div data-content="content"></div>
+            </div>
+            <span data-content="date"></span>
+            <button class="deleteTodo" data-value="id">Delete</button>
+        </div>
+
+    </script>
+    <script>
+        $("#addTodo").on('submit', function (e) {
+            e.preventDefault();
+            let data = {
+                todoTitle: e.target.todoTitle.value,
+                todoContent: e.target.todoContent.value
+            }
+
+            $.ajax({
+                url: "{{ path_for('addTodo') }}",
+                data,
+                type: "POST",
+                success: function (result) {
+                    loadDataToDOM(result);
+                    e.target.todoTitle.value = '';
+                    e.target.todoContent.value = '';
+                },
+                error: function (err) {
+                    console.log('error: ', err.message);
+                }
+            });
+        });
+
+        $("#todos").on('click', "button.deleteTodo", (e) => {
+            // console.log(e.target.value)
+            $.ajax({
+                url: "{{ path_for('deleteTodo') }}",
+                data: {
+                    id: e.target.value
+                },
+                type: "POST",
+                success: function (result) {
+                    console.log(result);
+                    $("#" + e.target.value).remove();
+                },
+                error: function (err) {
+                    console.log(err.responseText);
+                }
+            });
+        });
+
+        function loadDataToDOM(result) {
+            for (res in result) {
+                let data = result[res];
+                $('#todos').loadTemplate($("#todoTemplate"), {
+                    id: data['Todoindex'],
+                    title: data['Title'],
+                    content: data['Content'],
+                    date: data['Dateofcreation']
+                }, {append: true, prepend: true})
+            }
+        }
+
+        $(document).ready(function () {
+            $.ajax({
+                url: "{{ path_for('getTodoJson') }}",
+                success: function (result) {
+                    loadDataToDOM(result);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+
+
+    </script>
+{% endblock %}

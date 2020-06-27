@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="default" defaultIdMethod="native" namespace="App\Model" defaultPhpNamingMethod="underscore">
+  <table name="login" idMethod="native" phpName="Login" namespace="App\Model">
+    <column name="loginIndex" phpName="Loginindex" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="uname" phpName="Uname" type="VARCHAR" size="255"/>
+    <column name="pass" phpName="Pass" type="VARCHAR" size="255"/>
+    <index name="uname_idx">
+      <index-column name="uname"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="todo" idMethod="native" phpName="Todo" namespace="App\Model">
+    <column name="todoIndex" phpName="Todoindex" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="uname" phpName="Uname" type="VARCHAR" size="255" required="true"/>
+    <column name="title" phpName="Title" type="VARCHAR" size="255"/>
+    <column name="content" phpName="Content" type="LONGVARCHAR"/>
+    <column name="dateOfCreation" phpName="Dateofcreation" type="TIMESTAMP"/>
+    <foreign-key foreignTable="login" name="todo_ibfk_1">
+      <reference local="uname" foreign="uname"/>
+    </foreign-key>
+    <index name="uname">
+      <index-column name="uname"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>
