@@ -2,7 +2,8 @@
     "use strict";
     var templates = {},
         queue = {},
-        formatters = {};
+        formatters = {},
+        isArray;
 
     function loadTemplate(template, data, options) {
         var $that = this,
@@ -39,6 +40,7 @@
         }, options);
 
         if ($.type(data) === "array") {
+            isArray = true;
             return processArray.call(this, template, data, settings);
         }
 
@@ -83,6 +85,7 @@
             done = 0,
             success = 0,
             errored = false,
+            errorObjects = [],
             newOptions;
 
         if (settings.paged) {
@@ -91,22 +94,20 @@
             todo = data.length;
         }
 
+        if (!settings.append && !settings.prepend) {
+            $that.html("");
+        }
+
         newOptions = $.extend(
             {},
             settings,
             {
-                complete: function () {
-                    if (this.html) {
-                        if (doPrepend) {
-                            $that.prepend(this.html());
-                        } else {
-                            $that.append(this.html());
-                        }
-                    }
+                append: !settings.prepend && true,
+                complete: function (data) {
                     done++;
                     if (done === todo || errored) {
                         if (errored && settings && typeof settings.error === "function") {
-                            settings.error.call($that);
+                            settings.error.call($that, errorObjects);
                         }
                         if (settings && typeof settings.complete === "function") {
                             settings.complete();
@@ -121,20 +122,19 @@
                         }
                     }
                 },
-                error: function () {
+                error: function (e) {
                     errored = true;
+                    errorObjects.push(e);
                 }
             }
         );
 
-        if (!settings.append && !settings.prepend) {
-            $that.html("");
-        }
+
 
         if (doPrepend) data.reverse();
         $(data).each(function () {
-            var $div = $("<div/>");
-            loadTemplate.call($div, template, this, newOptions);
+
+            loadTemplate.call($that, template, this, newOptions);
             if (errored) {
                 return false;
             }
@@ -174,7 +174,6 @@
     }
 
     function loadAndPrepareTemplate(template, selection, data, settings) {
-        var $templateContainer = $("<div/>");
 
         templates[template] = null;
         var templateUrl = template;
@@ -185,24 +184,20 @@
             url: templateUrl,
             async: settings.async,
             success: function (templateContent) {
-                $templateContainer.html(templateContent);
-                handleTemplateLoadingSuccess($templateContainer, template, selection, data, settings);
+                handleTemplateLoadingSuccess($(templateContent), template, selection, data, settings);
             },
-            error: function () {
-                handleTemplateLoadingError(template, selection, data, settings);
+            error: function (e) {
+                handleTemplateLoadingError(template, selection, data, settings, e);
             }
         });
     }
 
     function loadTemplateFromDocument($template, selection, data, settings) {
-        var $templateContainer = $("<div/>");
-
         if ($template.is("script") || $template.is("template")) {
             $template = $.parseHTML($.trim($template.html()));
         }
 
-        $templateContainer.html($template);
-        prepareTemplate.call(selection, $templateContainer, data, settings);
+        prepareTemplate.call(selection, $template, data, settings);
 
         if (typeof settings.success === "function") {
             settings.success();
@@ -210,12 +205,16 @@
     }
 
     function prepareTemplate(template, data, settings) {
+        var template = $("<div/>").append(template);
         bindData(template, data, settings);
 
         $(this).each(function () {
-            var $templateHtml = $(template.html());
+            var $templateHtml = template.children().clone(true);
+            $("select", $templateHtml).each(function (key, value) {
+                $(this).val($("select", template).eq(key).val())
+            });
             if (settings.beforeInsert) {
-                settings.beforeInsert($templateHtml);
+                settings.beforeInsert($templateHtml, data);
             }
             if (settings.append) {
 
@@ -223,28 +222,28 @@
             } else if (settings.prepend) {
                 $(this).prepend($templateHtml);
             } else {
-                $(this).html($templateHtml);
+                $(this).html("").append($templateHtml);
             }
             if (settings.afterInsert) {
-                settings.afterInsert($templateHtml);
+                settings.afterInsert($templateHtml, data);
             }
         });
 
         if (typeof settings.complete === "function") {
-            settings.complete.call($(this));
+            settings.complete.call($(this), data);
         }
     }
 
-    function handleTemplateLoadingError(template, selection, data, settings) {
+    function handleTemplateLoadingError(template, selection, data, settings, error) {
         var value;
 
         if (typeof settings.error === "function") {
-            settings.error.call(selection);
+            settings.error.call(selection, error);
         }
 
         $(queue[template]).each(function (key, value) {
             if (typeof value.settings.error === "function") {
-                value.settings.error.call(value.selection);
+                value.settings.error.call(value.selection, error);
             }
         });
 
@@ -300,12 +299,16 @@
             $elem.text(applyFormatters($elem, value, "content", settings));
         });
 
+        processElements("data-innerHTML", template, data, settings, function ($elem, value) {
+            $elem.html(applyFormatters($elem, value, "content", settings));
+        });
+
         processElements("data-src", template, data, settings, function ($elem, value) {
             $elem.attr("src", applyFormatters($elem, value, "src", settings));
         }, function ($elem) {
             $elem.remove();
         });
-        
+
         processElements("data-href", template, data, settings, function ($elem, value) {
             $elem.attr("href", applyFormatters($elem, value, "href", settings));
         }, function ($elem) {
@@ -320,8 +323,10 @@
             $elem.attr("id", applyFormatters($elem, value, "id", settings));
         });
 
-        processElements("data-value", template, data, settings, function ($elem, value) {
-            $elem.attr("value", applyFormatters($elem, value, "value", settings));
+
+
+        processElements("data-class", template, data, settings, function ($elem, value) {
+            $elem.addClass(applyFormatters($elem, value, "class", settings));
         });
 
         processElements("data-link", template, data, settings, function ($elem, value) {
@@ -345,6 +350,12 @@
         });
 
         processAllElements(template, data, settings);
+
+        processElements("data-value", template, data, settings, function ($elem, value) {
+            $elem.val(applyFormatters($elem, value, "value", settings));
+        });
+
+
     }
 
     function processElements(attribute, template, data, settings, dataBindFunction, noDataFunction) {
@@ -430,6 +441,7 @@
 
                     switch (this.attribute) {
                         case "content":
+                        case "innerHTML":
                             $this.html(applyDataBindFormatters($this, value, this));
                             break;
                         case "contentAppend":
@@ -511,9 +523,9 @@
 
         var parentElement = options.parentElement || "div";
         var template = options.template || options;
-        
+
         //If a parent is specified, return it; otherwise only return the generated children.
-        if(options.parentElement)
+        if (options.parentElement)
             return $("<" + parentElement + "/>").loadTemplate(template, value, internalSettings);
         else
             return $("<" + parentElement + "/>").loadTemplate(template, value, internalSettings).children();

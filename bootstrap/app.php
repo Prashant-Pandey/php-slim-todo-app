@@ -31,6 +31,10 @@ $container['view'] = function ($container) {
     return $view;
 };
 
+$container['setMessage'] = function ($key, $value){
+    return $key;
+};
+
 // controllers
 $container['AuthController'] = function ($container){
     return new \App\Controller\AuthController\AuthController($container);
@@ -42,16 +46,6 @@ $container['HomeController'] = function ($container){
 
 $container['TodoListController'] = function ($container){
     return new App\Controller\TodoListController\TodoListController($container);
-};
-
-$container['TestController'] = function ($container){
-    return new \App\Controller\TestController\TestController;
-};
-
-$container['SetMessage'] = function ($container, $key, $value){
-    $res = $container->view->getEnvironment()->addGlobal($key, $value);
-    var_dump($res);
-    return true;
 };
 
 $container['password_hash_algo'] = PASSWORD_BCRYPT;

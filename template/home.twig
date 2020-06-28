@@ -5,19 +5,26 @@
 {% block content %}
     {#<div class="background"></div>#}
     {% if message %}
-        {{ message }}
+        <div class="row flex-row justify-content-center">
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                <span>{{ message }}</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
     {% endif %}
-    <div class="row flex-row flex-md-row flex-sm-column justify-content-center">
+    <div class="row flex-row flex-md-row flex-sm-column justify-content-center align-items-center mt-2">
         <div class="formGroup card p-3">
             <h1>Login Form</h1>
             <form id="loginForm" class="loginForm authForm" method="post" action="{{ path_for('login') }}">
                 <div class="form-group">
                     <label for="loginUserId">User Id</label>
-                    <input name="loginUserId" class="form-control" id="loginUserId" type="email">
+                    <input name="loginUserId" class="form-control border" id="loginUserId" type="text">
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">Password</label>
-                    <input name="loginPassword" class="form-control"  id="loginPassword" type="password">
+                    <input name="loginPassword" class="form-control border" id="loginPassword" type="password">
                 </div>
                 <input class="btn btn-primary pl-5 pr-5 mt-3" type="submit" value="Login">
             </form>
@@ -28,11 +35,11 @@
             <form id="signupForm" class="signupForm authForm" method="post" action="{{ path_for('signup') }}">
                 <div class="form-group">
                     <label for="signupUserId">User Id</label>
-                    <input name="signupUserId" class="form-control" id="signupUserId" type="email">
+                    <input name="signupUserId" class="form-control border" id="signupUserId" type="text">
                 </div>
                 <div class="form-group">
                     <label for="signupPassword">Password</label>
-                    <input name="signupPassword" class="form-control" id="signupPassword" type="password">
+                    <input name="signupPassword" class="form-control border" id="signupPassword" type="password">
                 </div>
                 <input class="btn btn-primary pl-5 pr-5 mt-3" type="submit" value="Sign Up">
             </form>

@@ -4,10 +4,8 @@
 {% endblock %}
 {% block content %}
     <div class="container">
-        <div id="errorMessage" class="row flex-row justify-content-center mt-2 hide">
-            <div class="alert alert-danger" role="alert">
-                A simple danger alert—check it out!
-            </div>
+        <div id="errorMessage" class="row flex-row justify-content-center mt-2">
+
         </div>
         <div class="row">
             <form id="addTodo" class="col-12 card">
@@ -29,6 +27,7 @@
 {% endblock %}
 
 {% block scripts %}
+    <script src="{{ base_url() }}/static/js/jquery.loadTemplate.js"></script>
     <script type="text/html" id="todoTemplate">
         <div data-id="id" class="col-lg-4 col-md-4 col-sm-6">
             <div class="card p-2 m-1">
@@ -37,34 +36,47 @@
                     <p class="card-text" data-content="content"></p>
                     <p class="card-text"><em>created at: <span data-content="date"></span></em></p>
                     <button class="btn btn-primary deleteTodo" data-value="id">Delete</button>
+                    {#                    <button class="btn btn-primary editTodo" data-value="id">Edit</button>#}
                 </div>
             </div>
 
         </div>
-
+    </script>
+    <script type="text/html" id="errorTemplate">
+        <div data-class="alertType" class="alert alert-dismissible fade show mr-1" role="alert">
+            <span data-content="message"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
     </script>
     <script>
         $("#addTodo").on('submit', function (e) {
             e.preventDefault();
-            let data = {
-                todoTitle: e.target.todoTitle.value,
-                todoContent: e.target.todoContent.value
-            }
-
-            $.ajax({
-                url: "{{ path_for('addTodo') }}",
-                data,
-                type: "POST",
-                success: function (result) {
-                    loadDataToDOM(result);
-                    e.target.todoTitle.value = '';
-                    e.target.todoContent.value = '';
-                },
-                error: function (err) {
-                    $("#errorMessage").removeClass('hide');
-                    $('#errorMessage .alert').text('Unable to add todo, Please try later');
+            console.log(verifyInputData(e.target.todoTitle.value)&&verifyInputData(e.target.todoContent.value), e.target.todoContent.value);
+            if (verifyInputData(e.target.todoTitle.value)&&verifyInputData(e.target.todoContent.value)){
+                let data = {
+                    todoTitle: e.target.todoTitle.value,
+                    todoContent: e.target.todoContent.value
                 }
-            });
+
+                $.ajax({
+                    url: "{{ path_for('addTodo') }}",
+                    data,
+                    type: "POST",
+                    success: function (result) {
+                        handleUserFeedbackMessage('success', 'Added new todo');
+                        e.target.todoTitle.value = '';
+                        e.target.todoContent.value = '';
+                        loadDataToDOM(result);
+                    },
+                    error: function (err) {
+                        handleUserFeedbackMessage('error', 'Unable to add todo, Please try later');
+                    }
+                });
+            }else{
+                loadFeedbackToDOM('please add some content to the todo', 'alert-warning');
+            }
         });
 
         $("#todos").on('click', "button.deleteTodo", (e) => {
@@ -76,12 +88,11 @@
                 },
                 type: "POST",
                 success: function (result) {
-                    console.log(result);
+                    handleUserFeedbackMessage('success', 'Deleted your todo');
                     $("#" + e.target.value).remove();
                 },
                 error: function (err) {
-                    $("#errorMessage").removeClass('hide');
-                    $('#errorMessage .alert').text('Unable to delete your todos, Please try later');
+                    handleUserFeedbackMessage('error', 'Unable to delete your todos, Please try later');
                 }
             });
         });
@@ -105,11 +116,36 @@
                     loadDataToDOM(result);
                 },
                 error: function (err) {
-                    $("#errorMessage").removeClass('hide');
-                    $('#errorMessage .alert').text('Unable to get your todo data, Please try later');
+                    handleUserFeedbackMessage('error', 'Unable to get your todo data, Please try later');
                 }
             });
         });
+
+        function loadFeedbackToDOM(message, alertType) {
+            $('#errorMessage').loadTemplate($("#errorTemplate"), {message, alertType}, {prepend: true});
+        }
+
+        const handleUserFeedbackMessage = (type, message = '') => {
+            switch (type) {
+                case 'warning':
+                    type = 'alert-warning';
+                    break;
+                case 'error':
+                    type = 'alert-danger';
+                    break;
+                case 'success':
+                    type = 'alert-success';
+                    break;
+                default:
+                    type = 'alert-warning';
+                    break;
+            }
+            loadFeedbackToDOM(message, type);
+        }
+
+        const verifyInputData = (str='')=>{
+            return str != null && str && str.trim() !== '';
+        }
 
 
     </script>

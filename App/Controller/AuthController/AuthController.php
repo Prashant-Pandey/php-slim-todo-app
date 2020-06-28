@@ -17,8 +17,9 @@ class AuthController extends BaseController
             return $response->withRedirect($this->container->router->pathFor('getTodoList'));
         } else {
             // show error
-            $this->container->view->getEnvironment()->addGlobal($this->container->message_key, 'userAlready Exists');
-            return $response->withRedirect($this->container->router->pathFor('home'));
+//            $this->container->setMessage($this->container, $this->container->message_key, 'User does not exists, please sign up');
+            $this->container->view->getEnvironment()->addGlobal($this->container->message_key, 'User does not exists, please sign up');
+            return $this->container->view->render($response, 'home.twig');
         }
 
     }
@@ -32,8 +33,8 @@ class AuthController extends BaseController
             return $response->withRedirect($this->container->router->pathFor('getTodoList'));
         } else {
             // show error
-            $this->container->view->getEnvironment()->addGlobal($this->container->message_key, 'userAlready Exists');
-            return $response->withRedirect($this->container->router->pathFor('home'));
+            $this->container->view->getEnvironment()->addGlobal($this->container->message_key, 'User already exists, please login');
+            return $this->container->view->render($response, 'home.twig');
         }
     }
 
