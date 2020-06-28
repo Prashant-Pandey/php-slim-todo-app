@@ -14,6 +14,7 @@ class AuthValidatorMiddleware extends BaseMiddleware
             return $response->withRedirect($this->container->router->pathFor('home'));
 
         }
+        $this->container->view->getEnvironment()->addGlobal('isLoggedIn', $auth->isLoggedIn());
         $response = $next($request, $response);
         return $response;
     }
