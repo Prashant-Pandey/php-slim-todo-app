@@ -7,28 +7,34 @@
     {% if message %}
         {{ message }}
     {% endif %}
-    <div class="allForms">
-        <div class="formGroup">
+    <div class="row flex-row flex-md-row flex-sm-column justify-content-center">
+        <div class="formGroup card p-3">
             <h1>Login Form</h1>
             <form id="loginForm" class="loginForm authForm" method="post" action="{{ path_for('login') }}">
-                <label for="loginUserId">User Id</label>
-                <input name="loginUserId" id="loginUserId" type="text">
-                <label for="loginPassword">Password</label>
-                <input name="loginPassword" id="loginPassword" type="password">
-                <input type="submit" value="Login">
-                    {{ csrf.field | raw }}
+                <div class="form-group">
+                    <label for="loginUserId">User Id</label>
+                    <input name="loginUserId" class="form-control" id="loginUserId" type="email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input name="loginPassword" class="form-control"  id="loginPassword" type="password">
+                </div>
+                <input class="btn btn-primary pl-5 pr-5 mt-3" type="submit" value="Login">
             </form>
         </div>
 
-        <div class="formGroup">
+        <div class="formGroup card p-3">
             <h1>Signup Form</h1>
             <form id="signupForm" class="signupForm authForm" method="post" action="{{ path_for('signup') }}">
-                <label for="signupUserId">User Id</label>
-                <input name="signupUserId" id="signupUserId" type="text">
-                <label for="signupPassword">Password</label>
-                <input name="signupPassword" id="signupPassword" type="password">
-                <input type="submit" value="Sign Up">
-                    {{ csrf.field | raw }}
+                <div class="form-group">
+                    <label for="signupUserId">User Id</label>
+                    <input name="signupUserId" class="form-control" id="signupUserId" type="email">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input name="signupPassword" class="form-control" id="signupPassword" type="password">
+                </div>
+                <input class="btn btn-primary pl-5 pr-5 mt-3" type="submit" value="Sign Up">
             </form>
         </div>
     </div>

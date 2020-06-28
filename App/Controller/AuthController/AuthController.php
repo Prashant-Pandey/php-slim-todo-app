@@ -14,6 +14,7 @@ class AuthController extends BaseController
         if ($auth->isUserExists($request->getParam('loginUserId')) &&
             $auth->loginService($request->getParam('loginUserId'),
                 $request->getParam('loginPassword'))) {
+            $this->setLoginVariable();
             return $response->withRedirect($this->container->router->pathFor('getTodoList'));
         } else {
             // show error
@@ -29,6 +30,7 @@ class AuthController extends BaseController
         if (!$auth->isUserExists($request->getParam('signupUserId')) &&
             $auth->signupService($request->getParam('signupUserId'),
                 $request->getParam('signupPassword'))) {
+            $this->setLoginVariable();
             return $response->withRedirect($this->container->router->pathFor('getTodoList'));
         } else {
             // show error
@@ -36,12 +38,17 @@ class AuthController extends BaseController
             return $response->withRedirect($this->container->router->pathFor('home'));
         }
     }
+    private function setLoginVariable(){
+        $auth = $this->container->AuthService;
+        $this->container->view->getEnvironment()->addGlobal('isLoggedIn', $auth->isLoggedIn());
+    }
 
     public function logout($request, $response)
     {
         try {
             $auth = $this->container->AuthService;
             $auth->logoutService();
+            $this->setLoginVariable();
             return $response->withRedirect($this->container->router->pathFor('home'));
         }catch (\Exception $err){
             return $response->withJson($err);

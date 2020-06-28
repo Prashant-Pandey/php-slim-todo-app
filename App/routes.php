@@ -1,7 +1,7 @@
 <?php
 
 
-$app->group('', function (){
+$app->group('', function () use($container){
     $this->get('/', 'HomeController:index')->setName('home');
     $this->post('/login', 'AuthController:login')->setName('login');
     $this->post('/signup', 'AuthController:signup')->setName('signup');

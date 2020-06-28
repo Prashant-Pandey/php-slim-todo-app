@@ -61,7 +61,8 @@
                     e.target.todoContent.value = '';
                 },
                 error: function (err) {
-                    console.log('error: ', err);
+                    $("#errorMessage").removeClass('hide');
+                    $('#errorMessage .alert').text('Unable to add todo, Please try later');
                 }
             });
         });
@@ -69,8 +70,7 @@
         $("#todos").on('click', "button.deleteTodo", (e) => {
             // console.log(e.target.value)
             $.ajax({
-                url: "localhost:8888/todo",
-{#                {{ path_for('deleteTodo') }}#}
+                url: "{{ path_for('deleteTodo') }}",
                 data: {
                     id: e.target.value
                 },
@@ -81,7 +81,7 @@
                 },
                 error: function (err) {
                     $("#errorMessage").removeClass('hide');
-                    $('#errorMessage .alert').textContent = 'Unable to delete your todos';
+                    $('#errorMessage .alert').text('Unable to delete your todos, Please try later');
                 }
             });
         });
@@ -105,7 +105,8 @@
                     loadDataToDOM(result);
                 },
                 error: function (err) {
-                    console.log(err);
+                    $("#errorMessage").removeClass('hide');
+                    $('#errorMessage .alert').text('Unable to get your todo data, Please try later');
                 }
             });
         });

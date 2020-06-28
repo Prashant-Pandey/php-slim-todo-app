@@ -57,13 +57,6 @@ $container['SetMessage'] = function ($container, $key, $value){
 $container['password_hash_algo'] = PASSWORD_BCRYPT;
 $container['message_key'] = 'message';
 
-// Middlewares
-//$app->add(new App\Middleware\CsrfMiddleware\CsrfMiddleware($container));
-//$container['csrf'] = function ($container){
-//    return new Guard();
-//};
-//$app->add($container->csrf);
-
 // Services
 $container['AuthService'] = function ($container){
     return new App\Service\AuthService\AuthService($container);

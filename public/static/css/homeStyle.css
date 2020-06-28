@@ -29,9 +29,9 @@
     justify-content: center;
     align-items: start;
     flex-direction: column;
-    padding: 24px;
-    border-radius: 5px;
-    background: dodgerblue;
+    /*padding: 24px;*/
+    /*border-radius: 5px;*/
+    /*background: dodgerblue;*/
     /*box-shadow: rgba(255, 255, 255, 0.6) 3px 3px 5px;*/
     font-family: "Candara Light";
 }
@@ -49,13 +49,4 @@
 
 .authForm input:focus {
     border: 1px solid #f0f0f0;
-}
-
-.authForm input[type='submit'] {
-    background-color: #1e90f0;
-    border: 1px solid #1e90f0;
-    padding: 8px;
-    margin-top: 18px;
-    min-width: 70%;
-    align-self: center;
 }
