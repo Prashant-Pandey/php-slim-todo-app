@@ -1,40 +1,45 @@
 {% extends 'app.twig' %}
+{% block css %}
+    <link href="{{ base_url() }}/static/css/todoListStyle.css" rel="stylesheet">
+{% endblock %}
 {% block content %}
-    <style>
-        .todoData {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
+    <div class="container">
+        <div id="errorMessage" class="row flex-row justify-content-center mt-2 hide">
+            <div class="alert alert-danger" role="alert">
+                A simple danger alert—check it out!
+            </div>
+        </div>
+        <div class="row">
+            <form id="addTodo" class="col-12 card">
+                <div class="form-group">
+                    <label for="todoTitle">Title: </label>
+                    <input name="todoTitle" class="form-control" id="todoTitle" type="text">
+                </div>
+                <div class="form-group">
+                    <label for="todoContent">Content: </label>
+                    <textarea name="todoContent" class="form-control" rows="3" id="todoContent"></textarea>
 
-        .todoText {
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
-    <form id="addTodo">
-        <label for="todoTitle">Title: </label>
-        <input name="todoTitle" id="todoTitle" type="text">
-        <label for="todoContent">Content: </label>
-        <textarea name="todoContent" id="todoContent"></textarea>
-        <input type="submit" value="Add Todos">
-    </form>
-    <div id="todos"></div>
-    <a href="{{ path_for("getTodoList") }}">Your Todo list</a>
-    <a href="{{ path_for("getTodoJson") }}">Your Todo list in JSON </a>
-    <a href="{{ path_for("addTodo") }}">Your Todo list</a>
-    <a href="{{ path_for("logout") }}">Logout</a>
+                </div>
+
+                <input type="submit" class="btn btn-primary" value="Add Todos">
+            </form>
+        </div>
+        <div id="todos" class="row"></div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/html" id="todoTemplate">
-        <div data-id="id" class="todoData">
-            <div class="todoText">
-                <div data-content="title"></div>
-                <div data-content="content"></div>
+        <div data-id="id" class="col-lg-4 col-md-4 col-sm-6">
+            <div class="card p-2 m-1">
+                <div class="card-body">
+                    <h5 class="card-title" data-content="title"></h5>
+                    <p class="card-text" data-content="content"></p>
+                    <p class="card-text"><em>created at: <span data-content="date"></span></em></p>
+                    <button class="btn btn-primary deleteTodo" data-value="id">Delete</button>
+                </div>
             </div>
-            <span data-content="date"></span>
-            <button class="deleteTodo" data-value="id">Delete</button>
+
         </div>
 
     </script>
@@ -56,7 +61,7 @@
                     e.target.todoContent.value = '';
                 },
                 error: function (err) {
-                    console.log('error: ', err.message);
+                    console.log('error: ', err);
                 }
             });
         });
@@ -64,7 +69,8 @@
         $("#todos").on('click', "button.deleteTodo", (e) => {
             // console.log(e.target.value)
             $.ajax({
-                url: "{{ path_for('deleteTodo') }}",
+                url: "localhost:8888/todo",
+{#                {{ path_for('deleteTodo') }}#}
                 data: {
                     id: e.target.value
                 },
@@ -74,7 +80,8 @@
                     $("#" + e.target.value).remove();
                 },
                 error: function (err) {
-                    console.log(err.responseText);
+                    $("#errorMessage").removeClass('hide');
+                    $('#errorMessage .alert').textContent = 'Unable to delete your todos';
                 }
             });
         });
@@ -87,7 +94,7 @@
                     title: data['Title'],
                     content: data['Content'],
                     date: data['Dateofcreation']
-                }, {append: true, prepend: true})
+                }, {prepend: true})
             }
         }
 

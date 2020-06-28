@@ -18,14 +18,18 @@ class TodoListService extends \App\Service\BaseService
     }
 
     public function addTodo($userId, $title, $content){
-        $todo = new Todo();
-        $time = time();
-        $todo->setUname($userId)
-             ->setTitle($title)
-             ->setContent($content)
-             ->setDateofcreation($time)
-             ->save();
-        return $this->filterTodoData(array($todo->toArray()));
+        try {
+            $todo = new Todo();
+            $time = time();
+            $todo->setUname($userId)
+                ->setTitle($title)
+                ->setContent($content)
+                ->setDateofcreation($time)
+                ->save();
+            return $this->filterTodoData(array($todo->toArray()));
+        }catch (\Exception $err){
+            return $err;
+        }
     }
 
     public function deleteTodo($id, $userId){

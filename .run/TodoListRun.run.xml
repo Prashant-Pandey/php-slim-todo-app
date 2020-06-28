@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TodoListRun" type="PhpBuiltInWebServerConfigurationType" factoryName="PHP Built-in Web Server" singleton="false" document_root="$PROJECT_DIR$" port="8888">
+    <CommandLine parameters="-c php.ini" />
+    <method v="2" />
+  </configuration>
+</component>

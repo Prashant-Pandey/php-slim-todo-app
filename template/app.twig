@@ -1,13 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Appzly Inc</title>
-    <link href="{{ base_url() }}/static/">
+    <link href="{{ base_url() }}/static/css/bootstrap.css" rel="stylesheet">
+    {% block css %}
+    {% endblock %}
 </head>
 <body>
-<h1>navigation</h1>
-{% block content %}{% endblock %}
-<h1>Footer</h1>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand nav-link" href="{{ path_for("logout") }}">Logout</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<main class="container-fluid">
+    {% block content %}{% endblock %}
+</main>
+<footer>
+
+</footer>
 <script src="{{ base_url() }}/static/js/jquery-3.5.1.min.js"></script>
 <script src="{{ base_url() }}/static/js/jquery.loadTemplate-1.4.4.js"></script>
 {% block scripts %}
